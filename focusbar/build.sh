@@ -10,9 +10,22 @@ cd "$(dirname "$0")"
 
 APP="FocusBar.app"
 BIN="$APP/Contents/MacOS/FocusBar"
+ICON="FocusBar.icns"
+
+# Build the app icon once, and again only if its generator changed. Without an
+# icon in the bundle, notification banners fall back to a blank placeholder.
+if [ ! -f "$ICON" ] || [ make_icon.swift -nt "$ICON" ]; then
+  echo "Drawing $ICON"
+  gen=$(mktemp -d)
+  trap 'rm -rf "$gen"' EXIT
+  swiftc -O make_icon.swift -o "$gen/icongen"
+  "$gen/icongen" "$gen/FocusBar.iconset" >/dev/null
+  iconutil -c icns "$gen/FocusBar.iconset" -o "$ICON"
+fi
 
 rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
+cp "$ICON" "$APP/Contents/Resources/$ICON"
 
 cat > "$APP/Contents/Info.plist" <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -22,6 +35,7 @@ cat > "$APP/Contents/Info.plist" <<'EOF'
     <key>CFBundleName</key><string>FocusBar</string>
     <key>CFBundleIdentifier</key><string>local.focusbar</string>
     <key>CFBundleExecutable</key><string>FocusBar</string>
+    <key>CFBundleIconFile</key><string>FocusBar</string>
     <key>CFBundlePackageType</key><string>APPL</string>
     <key>CFBundleShortVersionString</key><string>1.0</string>
     <key>CFBundleVersion</key><string>1</string>
