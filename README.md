@@ -2,6 +2,11 @@
 
 Small utility scripts.
 
+## focusbar/
+
+FocusBar, a Pomodoro timer for the macOS menu bar. See
+[focusbar/README.md](focusbar/README.md) for download and install steps.
+
 ## obsidian/obsidian-attachments.sh
 
 Tidies an Obsidian vault on macOS: creates an `attachments` folder, moves
